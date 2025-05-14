@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Agent Concept</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Privacy Agent Concept Demo</h1>
+        
+        <div class="feasibility-meter">
+            <h2>Feasibility Assessment</h2>
+            <div class="meter-container">
+                <div class="meter iframe-meter" style="width: 15%">15%</div>
+            </div>
+            <p>WebSim iframe approach: <strong>15/100</strong> (Limited by same-origin policy)</p>
+            
+            <div class="meter-container">
+                <div class="meter nodejs-meter" style="width: 70%">70%</div>
+            </div>
+            <p>Node.js desktop approach: <strong>70/100</strong> (More feasible but requires external development)</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="iframe">iframe Demo</button>
+            <button class="tab-btn" data-tab="nodejs">Node.js Concept</button>
+        </div>
+
+        <div class="tab-content active" id="iframe-content">
+            <h2>WebSim iframe Approach</h2>
+            <p>This demonstrates attempting to automate privacy requests using iframes (with significant limitations).</p>
+            
+            <div class="demo-container">
+                <div class="control-panel">
+                    <input type="text" id="iframe-url" placeholder="Website URL (demo only)" value="https://example-site.com">
+                    <button id="load-site">Load Site</button>
+                    <button id="scan-site">Scan for Privacy Options</button>
+                    <button id="submit-request">Submit Privacy Request</button>
+                </div>
+                
+                <div class="site-frame-container">
+                    <div class="mock-browser">
+                        <div class="browser-controls">
+                            <div class="browser-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="browser-address">example-site.com</div>
+                        </div>
+                        <div class="site-frame">
+                            <div id="mock-website">
+                                <h3>Example Website</h3>
+                                <p>This is a simulated website. In a real implementation, this would be an iframe.</p>
+                                <p>However, same-origin policy would prevent direct interaction with the iframe content.</p>
+                                <div class="mock-nav">
+                                    <a href="#" class="mock-link">Home</a>
+                                    <a href="#" class="mock-link">About</a>
+                                    <a href="#" class="mock-link">Contact</a>
+                                    <a href="#" class="mock-link privacy-link">Privacy</a>
+                                </div>
+                                <div class="mock-content">
+                                    <p>Welcome to Example Site! We collect various data about our users.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="agent-log">
+                    <h3>Agent Log</h3>
+                    <div id="iframe-log" class="log-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="nodejs-content">
+            <h2>Node.js Desktop Application Concept</h2>
+            <p>This demonstrates how a downloadable Node.js application could interact with websites to automate privacy requests.</p>
+            
+            <div class="demo-container">
+                <div class="control-panel">
+                    <input type="text" id="nodejs-url" placeholder="Website URL" value="https://example-site.com">
+                    <button id="nodejs-scan">Scan Website</button>
+                    <button id="nodejs-analyze">Analyze Structure</button>
+                    <button id="nodejs-submit">Submit Request</button>
+                </div>
+                
+                <div class="nodejs-demo">
+                    <div class="code-container">
+                        <h3>Node.js Implementation Concept</h3>
+                        <pre id="nodejs-code" class="code-block">
+const puppeteer = require('puppeteer');
+const { LLMClient } = require('./llm-client');
+
+async function privacyAgent(url, userInfo) {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  const llm = new LLMClient();
+  
+  // Navigate to website
+  await page.goto(url);
+  console.log(`Navigated to ${url}`);
+  
+  // Take screenshot for analysis
+  const screenshot = await page.screenshot({encoding: 'base64'});
+  
+  // Ask LLM to find privacy page
+  const analysis = await llm.analyze({
+    prompt: "Locate the privacy settings or data deletion page on this website",
+    image: screenshot
+  });
+  
+  // Navigate based on LLM guidance
+  await page.click(analysis.selector);
+  console.log("Found privacy page");
+  
+  // Analyze form structure
+  const formScreenshot = await page.screenshot({encoding: 'base64'});
+  const formAnalysis = await llm.analyze({
+    prompt: "Identify data deletion request form fields",
+    image: formScreenshot
+  });
+  
+  // Fill out form based on LLM guidance
+  for (const field of formAnalysis.fields) {
+    await page.fill(field.selector, userInfo[field.type]);
+  }
+  
+  // Submit form (with confirmation dialog)
+  const confirmSubmit = await llm.decide("Should I submit this form?");
+  if (confirmSubmit) {
+    await page.click(formAnalysis.submitButton);
+    console.log("Submitted privacy request");
+  }
+  
+  await browser.close();
+}
+
+// Example usage
+privacyAgent("https://example.com", {
+  name: "John Doe",
+  email: "john@example.com",
+  userId: "jdoe123"
+});
+                        </pre>
+                    </div>
+                </div>
+                
+                <div class="agent-log">
+                    <h3>Simulation Log</h3>
+                    <div id="nodejs-log" class="log-content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="limitations">
+            <h2>Key Limitations & Considerations</h2>
+            <ul>
+                <li><strong>Same-origin policy:</strong> Prevents scripts from directly interacting with content from different origins</li>
+                <li><strong>CAPTCHA & anti-bot measures:</strong> Many sites implement protection against automated submissions</li>
+                <li><strong>Authentication:</strong> Most sites require login before allowing privacy requests</li>
+                <li><strong>Site diversity:</strong> Each website has unique structure requiring custom handling</li>
+                <li><strong>Legal considerations:</strong> Automated agents may violate terms of service</li>
+            </ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
